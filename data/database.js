@@ -6,8 +6,8 @@ export const connectDB = () => {
   .connect(process.env.database_uri, {
     dbName: "backendapi",
   })
-  .then(() => {
-    console.log("database connected succesfully");
+  .then((c) => {
+    console.log(`database connected with ${c.connection.host}`);
   })
   .catch(() => {
     console.log("error in connnecting database");
