@@ -44,7 +44,7 @@ export const login = async (req, res, next) => {
 
     sendCookie(user, res, `Welcome back ${user.name}`, 200);
   } catch (error) {
-    next(error);
+    next("invalid email or password");
   }
 };
 
