@@ -3,14 +3,24 @@ import bcrypt from "bcrypt";
 import { sendCookie } from "../utils/features.js";
 import errorHandler from "./middlewares/error.js";
 
-export const getMyDetails = (req, res) => {
-  res.status(200).json({
-    message: "user details fetched successfully",
-    user: req.user,
-  });
-  console.log("akash", req.user);
-};
+export const login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
 
+    let user = await User.findOne({ email }).select("+password"); // because we have declare user password select as false.
+
+    if (!user) return next(new errorHandler("Invalid email or password", 404)); // here Error is a class.
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch)
+      return next(new errorHandler("Invalid email or password", 404)); // here Error is a class.
+
+    sendCookie(user, res, `Welcome back ${user.name}`, 200);
+  } catch (error) {
+    next("invalid email or password");
+  }
+};
 export const register = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
@@ -29,23 +39,12 @@ export const register = async (req, res, next) => {
   }
 };
 
-export const login = async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-
-    let user = await User.findOne({ email }).select("+password"); // because we have declare user password select as false.
-
-    if (!user) return next(new errorHandler("Invalid email or password", 404)); // here Error is a class.
-
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (!isMatch)
-      return next(new errorHandler("Invalid email or password", 404)); // here Error is a class.
-
-    sendCookie(user, res, `Welcome back ${user.name}`, 200);
-  } catch (error) {
-    next("invalid email or password");
-  }
+export const getMyDetails = (req, res) => {
+  res.status(200).json({
+    message: "user details fetched successfully",
+    user: req.user,
+  });
+  console.log("akash", req.user);
 };
 
 export const logout = (req, res) => {

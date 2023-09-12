@@ -6,11 +6,11 @@ class errorHandler extends Error {
   }
 }
 
-export const errormiddleware = () => {
+export const errormiddleware = (error, req, res, next) => {
   error.message = error.message || "Internal Server Error";
   error.statusCode = error.statusCode || 500;
 
-  return res.statusCode(error.statusCode).json({
+  return res.status(error.statusCode).json({
     success: false,
     message: error.message,
   });
